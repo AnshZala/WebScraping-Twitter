@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify
 from twitter_scraper import scrape_twitter_trends
 from proxy_manager import ProxyManager
 from db_manager import DBManager
+import os
 
 app = Flask(__name__)
 
@@ -10,6 +11,7 @@ db_manager = DBManager('mongodb://localhost:27017/')
 
 @app.route('/')
 def index():
+    print(os.path.exists("templates/index.html"))  # Check if file exists
     return render_template('index.html')
 
 @app.route('/run_script')
