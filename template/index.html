@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter Trending Topics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #results {
+            display: none;
+            margin-top: 20px;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Twitter Trending Topics</h1>
+    <button id="runScript">Click here to run the script</button>
+
+    <div id="results">
+        <h2>These are the most happening topics as on <span id="dateTime"></span></h2>
+        <ul id="trendingTopics"></ul>
+        <p>The IP address used for this query was <span id="ipAddress"></span>.</p>
+        <h3>Here's a JSON extract of this record from the MongoDB:</h3>
+        <pre id="jsonExtract"></pre>
+        <button id="runAgain">Click here to run the query again</button>
+    </div>
+
+    <script>
+        document.getElementById('runScript').addEventListener('click', fetchResults);
+        document.getElementById('runAgain').addEventListener('click', fetchResults);
+
+        function fetchResults() {
+            fetch('/run_script')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('dateTime').textContent = new Date(data.dateTime).toLocaleString();
+                    
+                    const trendsList = document.getElementById('trendingTopics');
+                    trendsList.innerHTML = '';
+                    data.trends.forEach(trend => {
+                        const li = document.createElement('li');
+                        li.textContent = trend;
+                        trendsList.appendChild(li);
+                    });
+
+                    document.getElementById('ipAddress').textContent = data.ipAddress;
+                    document.getElementById('jsonExtract').textContent = JSON.stringify(data.mongoRecord, null, 2);
+
+                    document.getElementById('results').style.display = 'block';
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
